@@ -1,3 +1,6 @@
+// WARNING: Only use this in development!
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -9,19 +12,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Optional: Test DB connection on startup
+// DB connection check
 pool
-  .connect()
+  .query("SELECT NOW()")
   .then(() => {
-    console.log("Database connected successfully");
-    // Start the server only after DB connection
-    const PORT = process.env.PORT || 5000;
+    console.log("✅ Connected to Supabase Postgres DB");
+
+    const PORT = process.env.PORT || 8000;
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("Database connection failed:", err);
+    console.error("❌ Database connection failed:", err);
     process.exit(1);
   });
 
