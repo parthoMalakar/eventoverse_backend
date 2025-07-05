@@ -12,7 +12,9 @@
     "express": "^4.18.2",
     "mysql2": "^3.6.0",
     "nodemailer": "^7.0.4",
-    "pg": "^8.16.3",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
     "webpack-cli": "^6.0.1"
   }
 }
