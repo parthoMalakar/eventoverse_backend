@@ -1,0 +1,108 @@
+apiVersion: wso2.com/v1alpha1
+kind: Component
+metadata:
+  name: event-backend
+  version: v1.0.0
+spec:
+  type: web
+  build:
+    context: .
+    dockerfile: Dockerfile
+  runtime: nodejs18
+  replicas: 1
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  ports:
+    - name: http
+      port: 5000
+      protocol: TCP
+  endpoints:
+    - name: rest-api
+      port: 5000
+      type: REST
+      networkVisibility: Public
+      schema:
+        type: OpenAPI
+        version: 3.0.0
+        description: Event Backend REST API for order management
+        info:
+          title: Event Backend API
+          version: 1.0.0
+          description: REST API for managing event orders
+        paths:
+          /api/orders:
+            get:
+              summary: Get all orders
+              description: Retrieve a list of all orders
+              responses:
+                '200':
+                  description: Successful response
+                  content:
+                    application/json:
+                      schema:
+                        type: array
+                        items:
+                          type: object
+            post:
+              summary: Create a new order
+              description: Add a new order to the system
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        eventId:
+                          type: string
+                          description: Unique identifier for the event
+                        userId:
+                          type: string
+                          description: User ID placing the order
+                        quantity:
+                          type: integer
+                          description: Number of tickets
+                        totalAmount:
+                          type: number
+                          description: Total amount for the order
+              responses:
+                '201':
+                  description: Order created successfully
+                '400':
+                  description: Bad request
+      context: /api
+  env:
+    - name: NODE_ENV
+      value: production
+    - name: PORT
+      value: "5000"
+    - name: DB_USER
+      value: "avnadmin"
+    - name: DB_HOST
+      value: "pg-dd6a420789a64ef393b635e6a552c20c-eventove3932480094-choreo-o.i.aivencloud.com"
+    - name: DB_NAME
+      value: "defaultdb"
+    - name: DB_PORT
+      value: "28668"
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: db-password-secret
+          key: password
+  healthCheck:
+    httpGet:
+      path: /api/orders
+      port: 5000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  scaling:
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70 
