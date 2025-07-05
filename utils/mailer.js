@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 const sendOrderEmail = async (order) => {
   const mailOptions = {
     from: `"Weddingz Site" <${process.env.EMAIL_USER}>`,
-    to: "ronitdasakard@gmail.com",//reciepent/
+    to: "ronitdasakard@gmail.com", //reciepent/
     subject: `New Event Order from ${order.full_name}`,
     html: `
       <h2>New Order Received</h2>
