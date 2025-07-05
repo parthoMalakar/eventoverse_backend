@@ -1,0 +1,40 @@
+apiVersion: wso2.com/v1alpha1
+kind: Component
+metadata:
+  name: event-backend
+  version: v1.0.0
+spec:
+  type: web
+  build:
+    context: .
+    dockerfile: Dockerfile
+  runtime: nodejs18
+  replicas: 1
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  ports:
+    - name: http
+      port: 5000
+      protocol: TCP
+  env:
+    - name: NODE_ENV
+      value: production
+    - name: PORT
+      value: "5000"
+  healthCheck:
+    httpGet:
+      path: /api/orders
+      port: 5000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  scaling:
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70 
